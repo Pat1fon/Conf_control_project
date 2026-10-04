@@ -2,15 +2,17 @@ import sys
 
 def navigate(command, arguments):
     if command == "ls":
-        ls(arguments)
+        return ls(arguments)
     elif command == "cd":
-        cd(arguments)
+        return cd(arguments)
+    else:
+        return f"{command}: команда не найдена"
 
 def ls (args):
-    print(f"ls {args}")
+    return f"ls {args}"
 
 def cd (args):
-    print(f"cd {args}")
+    return f"cd {args}"
 
 def main() -> int:
 
@@ -22,18 +24,24 @@ def main() -> int:
             cmd = cmd.strip()
 
             parsed = cmd.split()
+            if not parsed:
+                continue
+
             command = parsed[0]
             arguments = parsed[1:]
 
-            if cmd == "exit":
+            if command == "exit":
                 sys.exit(0)
 
-            navigate(command, arguments)
+            result = navigate(command, arguments)
+            if result:
+                print(result)
 
         except (KeyboardInterrupt, EOFError) as err:
                     # Корректная обработка Ctrl+C или Ctrl+D
                     print(f"\nОшибка: {err}")
                     sys.exit(0)
+    return 0
 
 if __name__ == "__main__":
     main()
