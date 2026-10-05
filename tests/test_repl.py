@@ -1,3 +1,5 @@
+#python -m unittest discover -s tests
+
 import unittest
 import os
 import sys
@@ -24,9 +26,13 @@ class TestRepl(unittest.TestCase):
 
     @patch('builtins.input', side_effect=['exit'])
     def test_exit(self, mock_input):
-        with self.assertRaises(SystemExit) as context:
-            main()
-        self.assertEqual(context.exception.code, 0)
+        test_args = ["practice_1_CLI.py", "--vfs", "./test_vfs"]
+
+        with patch.object(sys, 'argv', test_args):
+            with self.assertRaises(SystemExit) as cm:
+                main()
+
+        self.assertEqual(cm.exception.code, 0)
 
     def test_unkown_command(self):
         result = navigate("unkown", ["/"])
