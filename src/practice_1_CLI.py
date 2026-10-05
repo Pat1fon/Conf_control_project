@@ -100,7 +100,7 @@ def main() -> int:
     print(f"Стартовый скрипт: {os.path.abspath(args.script) if args.script else 'Незадан'}")
 
     try:
-        with open(args.vfs, "r") as f:
+        with open(args.vfs, "r", encoding="utf-8") as f:
             vfs_tree = json.load(f)
     except Exception as e:
         print(f"Критическая ошибка загрузки VFS: {e}")
@@ -111,7 +111,7 @@ def main() -> int:
             print(f"Ошибка: стартовый скрипт {args.script} не найден")
         else:
             print(f"Выполнение стартового скрипта: {args.script}")
-            with open(args.script, "r") as f:
+            with open(args.script, "r", encoding="utf-8") as f:
                 for line in f:
                     execute_line(line, cmd_name)
             print("Выполнение стартового скрипта завершено")

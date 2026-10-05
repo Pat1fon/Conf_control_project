@@ -82,14 +82,28 @@ VFS:/$ exit
 Выполнение стартового скрипта: start_script.txt
 VFS:/$ ls
 bin home
-VFS:/$ cd home/user/docs
+VFS:/$ cd home
+VFS:/$ ls
+user
+VFS:/$ cd user/docs
 VFS:/user/docs$ ls
 readme.txt
 VFS:/user/docs$ cd ..
 VFS:/user$ ls
 docs
+VFS:/user$ cd
+VFS:/$ cd /bin
+VFS:/$ ls
+VFS:/$ clear
+clear: команда не найдена
+VFS:/$ cd /home/user/invalid_folder
+cd: /home/user/invalid_folder: Нет такого файла или директории
+VFS:/$ cd bin
+cd: bin: Нет такого файла или директории
+VFS:/$ cd
 Выполнение стартового скрипта завершено
-VFS:/home/user$cd /home/user/docs
+VFS:/$
+VFS:/$cd home/user/docs
 VFS:/home/user/docs$cd
 VFS:/$ls
 bin home
