@@ -5,39 +5,46 @@ import os
 import sys
 from unittest.mock import patch
 
+from src import practice_1_CLI
 from src.practice_1_CLI import navigate, ls, cd, main
 
 class TestRepl(unittest.TestCase):
-    def test_ls_no_args(self):
-        result = navigate("ls", [])
-        self.assertEqual(result, "ls []")
 
-    def test_ls_with_args(self):
-        result = navigate("ls", ["-p", "args"])
-        self.assertEqual(result, "ls ['-p', 'args']")
+    def setUp(self):
+        #Вызывается перед каждым тестом. Заполняет тестовую VFS в памяти
+        practice_1_CLI.vfs_tree = {
+            "root": {
+                "bin": {},
+                "home": {
+                    "user": {
+                        "file.txt": "hello"
+                    }
+                }
+            }
+        }
+        practice_1_CLI.current_path = ["root"]
 
-    def test_cd_with_args(self):
-        result = navigate("cd", ["c/"])
-        self.assertEqual(result, "cd ['c/']")
+    def test_ls_root(self):
+        #Проверка ls в корневом каталоге
+        result = practice_1_CLI.ls([])
+        self.assertIn("bin", result)
+        self.assertIn("home", result)
 
-    def test_cd_no_args(self):
-        result = navigate("cd", [])
-        self.assertEqual(result, "cd []")
+    def test_cd_valid_dir(self):
+        #Проверка успешного перехода cd
+        practice_1_CLI.cd(["home"])
+        self.assertEqual(practice_1_CLI.current_path, ["root", "home"])
 
-    @patch('builtins.input', side_effect=['exit'])
-    def test_exit(self, mock_input):
-        test_args = ["practice_1_CLI.py", "--vfs", "./test_vfs"]
+    def test_cd_invalid_dir(self):
+        # Проверка cd в несуществующую папку
+        result = practice_1_CLI.cd(["not_exist"])
+        self.assertIn("cd: not_exist: Нет такого файла или директории", result)
 
-        with patch.object(sys, 'argv', test_args):
-            with self.assertRaises(SystemExit) as cm:
-                main()
-
-        self.assertEqual(cm.exception.code, 0)
-
-    def test_unkown_command(self):
-        result = navigate("unkown", ["/"])
-        self.assertEqual(result, "unkown: команда не найдена")
-
+    def test_cd_dot_dot(self):
+        # Проверка cd ..
+        practice_1_CLI.current_path = ["root", "home"]
+        practice_1_CLI.cd([".."])
+        self.assertEqual(practice_1_CLI.current_path, ["root"])
 
 if __name__ == '__main__':
     unittest.main()

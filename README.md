@@ -68,8 +68,44 @@ VFS:/$ exit
 VFS:/$ exit
 Выход из эмулятора.
 ```
-## Запуск проекта и тестов
 
+### Этап 3. VFS (Виртуальная файловая система)
+1. Подключена In-Memory VFS из JSON-файла `vfs_config.json`.
+2. Реализованы команды навигации и вывода содержимого каталога (`ls`, `cd`, `cd ..`).
+3. Динамически обновляется приглашение в командной строке.
+
+```angular2html
+Параметры vfs, script
+Отладочный вывод конфигурации
+Путь к VFS: C:\Users\User\Documents\Конфигурационное управление\Conf_control_project\vfs_config.json
+Стартовый скрипт: C:\Users\User\Documents\Конфигурационное управление\Conf_control_project\start_script.txt
+Выполнение стартового скрипта: start_script.txt
+VFS:/$ ls
+bin home
+VFS:/$ cd home/user/docs
+VFS:/user/docs$ ls
+readme.txt
+VFS:/user/docs$ cd ..
+VFS:/user$ ls
+docs
+Выполнение стартового скрипта завершено
+VFS:/home/user$cd /home/user/docs
+VFS:/home/user/docs$cd
+VFS:/$ls
+bin home
+VFS:/$cd bin
+VFS:/bin$ls
+VFS:/bin$ls
+VFS:/bin$exit
+Выход из эмулятора.
+Press any key to continue . . . 
+```
+
+## Запуск проекта и тестов
+### Запуск проекта
+```angular2html
+./run_full.bat
+```
 ### Команда для запуска автоматических Unit-тестов:
 ```bash
 python -m unittest discover -s tests
