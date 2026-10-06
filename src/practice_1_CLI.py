@@ -2,6 +2,7 @@ import argparse
 import os
 import sys
 import json
+from datetime import datetime
 
 vfs_tree = {}
 current_path = []
@@ -17,14 +18,18 @@ def get_node_by_path(path_list):
             return None
     return node
 
-
-
 def navigate(command, arguments):
     global current_path
     if command == "ls":
         return ls(arguments)
     elif command == "cd":
         return cd(arguments)
+    elif command == "date":
+        return date_cmd(arguments)
+    elif command == "tree":
+        return tree_cmd(arguments)
+    elif command == "du":
+        return du_cmd(arguments)
     else:
         return f"{command}: команда не найдена"
 
@@ -61,6 +66,55 @@ def cd (args):
     current_path = new_path
     return ""
 
+def date_cmd(arguments):
+    #Реализация команды date
+    return datetime.now().strftime("%Y/%m/%d %H:%M:%S MSK %Y")
+
+def _build_tree(node, prefix=""):
+    #Рекурсивная функция отрисовки дерева
+    if not isinstance(node, dict):
+        return []
+    lines = []
+    items = list(node.keys())
+
+    for i, item in enumerate(items):
+        connector = "^--" if i == len(items) - 1 else "|--"
+        lines.append(f"{prefix}{connector}{item}")
+
+        if isinstance(node[item], dict):
+            new_prefix = prefix + ("    " if i == len(items) - 1 else "|   ")
+            lines.extend(_build_tree(node[item], new_prefix))
+    return lines
+
+def tree_cmd(arguments):
+    # Реализация команды tree
+    node = get_node_by_path(current_path)
+    if not isinstance(node, dict):
+        return "Ошибка: невозможно построить дерево"
+    lines = _build_tree(node)
+    return "\n".join(lines) if lines else "."
+
+def _calculate_size(node):
+    # Рекурсивный подсчет размера файлов
+    if not isinstance(node, dict):
+        return len(str(node))
+    total = 0
+    for item in node.values():
+        total += _calculate_size(item)
+    return total
+
+def du_cmd(arguments):
+    # Реализация команды du
+    node = get_node_by_path(current_path)
+    if not isinstance(node, dict):
+        return "Ошибка: невозможно рассчитать размер"
+
+    lines = []
+    for item_name, item_value in node.items():
+        size = _calculate_size(item_value)
+        lines.append(f"{item_name}: {size}")
+    return "\n".join(lines) if lines else ""
+
 
 def execute_line(input_cmd, cmd_name):
     input_line = input_cmd.strip()
@@ -72,6 +126,8 @@ def execute_line(input_cmd, cmd_name):
     print(f"{cmd_name}:{vfs_display_path}$ {input_line}")
 
     parsed = input_line.split()
+    if not parsed:
+        return False
     command = parsed[0]
     arguments = parsed[1:]
 
